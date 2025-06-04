@@ -191,10 +191,10 @@ def optimize_itinerary(start: str, end: str, stops: list):
         "optimizeWaypointOrder": "true"
     }
     headers = {
-    'content-type': 'application/json; application/json',
-    'X-Goog-Api-Key': GMAPS_API_KEY,
-    'X-Goog-FieldMask': 'routes,geocodingResults.intermediates.intermediateWaypointRequestIndex',
-}
+        "content-type": "application/json",
+        "X-Goog-Api-Key": GMAPS_API_KEY,
+        "X-Goog-FieldMask": "routes,geocodingResults.intermediates.intermediateWaypointRequestIndex",
+    }
     try:
         print(payload)
         response = requests.post("https://routes.googleapis.com/directions/v2:computeRoutes", headers=headers, json=payload)
@@ -204,9 +204,11 @@ def optimize_itinerary(start: str, end: str, stops: list):
             if not routes:
                 logging.error("No routes returned in response: %s", json.dumps(data, indent=2))
                 return [start] + stops + [end]
-            optimized_order = routes["optimizedIntermediateWaypointIndex"]
+            optimized_order = routes.get("optimizedIntermediateWaypointIndex")
             if not optimized_order:
-                logging.warning("No optimized waypoint order returned; falling back to original order.")
+                logging.warning(
+                    "No optimized waypoint order returned; falling back to original order."
+                )
                 return [start] + stops + [end]
             # Reorder stops according to the optimized order.
             optimized_stops = [stops[i] for i in optimized_order]
